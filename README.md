@@ -1,1 +1,1 @@
-# sql_project
+Project on Grocery Store Management
