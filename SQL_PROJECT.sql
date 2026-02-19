@@ -91,8 +91,8 @@ SELECT * FROM ORDERS;
 -- Analysis Questions
 -- 1️. Customer Insights
 -- Gain an understanding of customer engagement and purchasing behavior.
--- How many unique customers have placed orders?
 
+-- 1.How many unique customers have placed orders?
 show tables;
 select count(distinct(cust_id)) as total_unique_cust from orders;
 
@@ -167,7 +167,15 @@ group by t2.prod_name;
 
 
 -- 5.How do product sales vary by category and supplier
-
+select sup_name,cat_name,sum(quantity) as quantity,sum(total_price) as revenue
+from supplier t1
+join products t2
+on t1.sup_id=t2.sup_id
+join categories t3
+on t2.cat_id=t3.cat_id
+join order_details t4
+on t2.prod_id=t4.prod_id
+group by sup_name,cat_name;
 
 
 -- 3. Sales and Order Trends
@@ -175,8 +183,8 @@ group by t2.prod_name;
 
 
 -- 1.How many orders have been placed in total?
-select count(ord_id) total_orders 
-from order_details;
+select distinct(count(ord_id)) total_orders 
+from orders;
 
 -- 2.What is the average value per order?
 select ord_id,avg(total_price) as average_value
@@ -315,7 +323,14 @@ group by name;
 -- Explore item-level sales patterns and pricing behavior.
 
 -- 1.What is the relationship between quantity ordered and total price?
-
+select *,quantity*each_price as relationship
+ from order_details;
+/*They have a directly proportional (positive) relationship.
+total_price=quantity×each_price
+total_price=quantity×each_price
+If quantity increases, total_price increases
+If quantity decreases, total_price decreases
+If each_price is constant, doubling quantity doubles total_price*/
 
 -- 2.What is the average quantity ordered per product?
 select prod_name,round(avg(quantity)) as avg_quantity
@@ -325,3 +340,20 @@ on t1.prod_id=t2.prod_id
 group by prod_name;
 
 -- 3.How does the unit price vary across products and orders?
+SELECT t3.prod_name,min(t2.each_price) as min_unit_price,max(t2.each_price) as max_unit_price
+FROM orders t1
+JOIN order_details t2 
+ON t1.ord_id = t2.ord_id
+JOIN products t3 
+ON t2.prod_id = t3.prod_id
+group by t3.prod_name;
+
+-- to check if products price have been changed
+SELECT t3.prod_name,min(t2.each_price) as min_unit_price,max(t2.each_price) as max_unit_price
+FROM orders t1
+JOIN order_details t2 
+ON t1.ord_id = t2.ord_id
+JOIN products t3 
+ON t2.prod_id = t3.prod_id
+group by t3.prod_name
+having min_unit_price <> max_unit_price;
