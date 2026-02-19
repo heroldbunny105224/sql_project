@@ -1,1 +1,1 @@
-Project on Grocery Store Management - new
+Project on Grocery Store Management
